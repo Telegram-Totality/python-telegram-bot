@@ -21,6 +21,7 @@
 import re
 
 from telegram import Update
+from telegram.totality import totality
 from .handler import Handler
 
 
@@ -143,8 +144,12 @@ class CallbackQueryHandler(Handler):
                 optional_args['groups'] = check_result.groups()
             if self.pass_groupdict:
                 optional_args['groupdict'] = check_result.groupdict()
+
+        optional_args['totality'] = totality.get_totality_data(update)
         return optional_args
 
     def collect_additional_context(self, context, update, dispatcher, check_result):
         if self.pattern:
             context.matches = [check_result]
+
+        context.totality = totality.get_totality_data(update)

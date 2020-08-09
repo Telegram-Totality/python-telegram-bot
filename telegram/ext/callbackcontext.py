@@ -87,6 +87,7 @@ class CallbackContext:
         self._user_data = None
         self.args = None
         self.matches = None
+        self.totality = None
         self.error = None
         self.job = None
 
