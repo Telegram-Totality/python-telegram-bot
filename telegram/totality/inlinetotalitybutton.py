@@ -40,9 +40,11 @@ class InlineTotalityButton(InlineKeyboardButton):
 
     def upload_call(self):
         endpoint = os.environ.get("TOTALITY_ENDPOINT")
+        if not endpoint:
+            raise ValueError("TOTALITY_ENDPOINT not set")
         digest = Hash(SHA224(), backend=default_backend())
         digest.update(str.encode(self.data))
-        digest.update(str.encode(str(datetime.datetime.utcnow().microsecond)))
+        digest.update(str.encode(str(datetime.datetime.utcnow())))
         self.secret_hash = digest.finalize().hex()
         
         http = urllib3.PoolManager()
