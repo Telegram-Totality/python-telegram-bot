@@ -23,6 +23,10 @@ import socket
 import sys
 import warnings
 
+endpoint = os.environ.get("TOTALITY_ENDPOINT")
+if not endpoint:
+    raise ValueError("TOTALITY_ENDPOINT not set")
+
 try:
     import ujson as json
 except ImportError:

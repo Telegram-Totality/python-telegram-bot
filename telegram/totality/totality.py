@@ -18,10 +18,6 @@ def get_totality_data(update):
 
     hash = data[8:]
     endpoint = os.environ.get("TOTALITY_ENDPOINT")
-    if not endpoint:
-        print("Please use TOTALITY_ENDPOINT environment variable")
-        return
-
     http = urllib3.PoolManager()
     r = http.request("GET", "%s/result/%s" % (endpoint, hash))
     if r.status != 200:

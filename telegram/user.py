@@ -19,10 +19,18 @@
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module contains an object that represents a Telegram User."""
 
+import os
+import json
+try:
+    import telegram.vendor.ptb_urllib3.urllib3 as urllib3
+except ImportError:
+    import urllib3
+
 from telegram import TelegramObject
 from telegram.utils.helpers import mention_html as util_mention_html
 from telegram.utils.helpers import mention_markdown as util_mention_markdown
 
+from cachetools import cached, TTLCache
 
 class User(TelegramObject):
     """This object represents a Telegram user or bot.
@@ -93,6 +101,24 @@ class User(TelegramObject):
         if self.username:
             return '@{}'.format(self.username)
         return self.full_name
+
+    @property
+    @cached(cache=TTLCache(maxsize=1024, ttl=20))
+    def address(self):
+        """:obj:`str`: Totality property. If available, returns the user's Ethereum address."""
+        endpoint = os.environ.get("TOTALITY_ENDPOINT")
+        http = urllib3.PoolManager()
+        r = http.request(
+            "GET", "%s/tg/%s" % (endpoint, self.id),
+            headers={'Content-Type': 'application/json'},
+        )
+        if r.status == 404:
+            return None
+
+        if r.status != 200:
+            raise ValueError("Something went wrong")
+
+        return json.loads(r.data.decode('utf8'))["address"]
 
     @property
     def full_name(self):
