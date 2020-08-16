@@ -31,6 +31,7 @@ from telegram.utils.helpers import mention_html as util_mention_html
 from telegram.utils.helpers import mention_markdown as util_mention_markdown
 
 from cachetools import cached, TTLCache
+_cache = TTLCache(maxsize=1024, ttl=20)
 
 class User(TelegramObject):
     """This object represents a Telegram user or bot.
@@ -103,7 +104,7 @@ class User(TelegramObject):
         return self.full_name
 
     @property
-    @cached(cache=TTLCache(maxsize=1024, ttl=20))
+    @cached(cache=_cache)
     def address(self):
         """:obj:`str`: Totality property. If available, returns the user's Ethereum address."""
         endpoint = os.environ.get("TOTALITY_ENDPOINT")
@@ -119,6 +120,9 @@ class User(TelegramObject):
             raise ValueError("Something went wrong")
 
         return json.loads(r.data.decode('utf8'))["address"]
+
+    def address_clear(self):
+        _cache.clear()
 
     @property
     def full_name(self):
