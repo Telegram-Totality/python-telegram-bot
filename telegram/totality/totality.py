@@ -8,23 +8,18 @@ except ImportError:
 def get_totality_data(update):
     if not update:
         return
-    
+
     if not update.callback_query:
         return
 
     data = update.callback_query["data"]
-    if not data.startswith("tgtotal-"):
+    if not (data.startswith("tgtotdo-") or data.startswith("tgtotca-")):
         return
-
+    canceled = data.startswith("tgtotca-")
     hash = data[8:]
     endpoint = os.environ.get("TOTALITY_ENDPOINT")
     http = urllib3.PoolManager()
     r = http.request("GET", "%s/result/%s" % (endpoint, hash))
     if r.status != 200:
-        print("Something went wrong: %s" % r.data)
-        return
-    
-    data = json.loads(r.data)
-    # validate data
-    return data
-    
+        return {"canceled": canceled, "tx": None}
+    return {"canceled": canceled, "tx": json.loads(r.data)}

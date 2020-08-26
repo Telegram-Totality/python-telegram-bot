@@ -13,13 +13,13 @@ except ImportError:
 
 class InlineTotalityButton(InlineKeyboardButton):
 
-    def __init__(self, text, call, gasPrice, gasLimit, weiValue=0):
+    def __init__(self, call, gasPrice, gasLimit, weiValue=0):
         if not hasattr(call, "abi") or not hasattr(call, "address") or not hasattr(call, "fn_name"):
             raise ValueError("Expecting contract call")
 
         InlineKeyboardButton.__init__(
             self,
-            text
+            "Custodial bot"
         )
 
         params = {}
@@ -36,7 +36,9 @@ class InlineTotalityButton(InlineKeyboardButton):
             "gasLimit": gasLimit,
             "weiValue": weiValue,
             "abi": call.abi
+            # TODO, add @self, so custodialbot can send you back
         })
+        self.url = None
 
     def upload_call(self):
         endpoint = os.environ.get("TOTALITY_ENDPOINT")
@@ -44,7 +46,7 @@ class InlineTotalityButton(InlineKeyboardButton):
         digest.update(str.encode(self.data))
         digest.update(str.encode(str(datetime.datetime.utcnow())))
         self.secret_hash = digest.finalize().hex()
-        
+
         http = urllib3.PoolManager()
         r = http.request(
             "POST", "%s/call/%s" % (endpoint, self.secret_hash),
@@ -55,6 +57,7 @@ class InlineTotalityButton(InlineKeyboardButton):
             raise ValueError("Something went wrong")
 
     def to_dict(self):
-        self.upload_call()
-        self.callback_data = "tgtotal-%s" % self.secret_hash
+        if not self.url:
+            self.upload_call()
+            self.url = "https://t.me/CustodialBot?start=tgtotal-%s" % self.secret_hash
         return InlineKeyboardButton.to_dict(self)

@@ -64,6 +64,7 @@ from .passport.data import IdDocumentData, PersonalDetails, ResidentialAddress
 from .passport.encryptedpassportelement import EncryptedPassportElement
 from .passport.passportdata import PassportData
 from .totality.inlinetotalitybutton import InlineTotalityButton
+from .totality.inlinetotalitymarkup import InlineTotalityMarkup
 from .inline.inlinekeyboardbutton import InlineKeyboardButton
 from .inline.inlinekeyboardmarkup import InlineKeyboardMarkup
 from .message import Message
@@ -131,7 +132,7 @@ __author__ = 'devs@python-telegram-bot.org'
 
 __all__ = [
     'Audio', 'Bot', 'Chat', 'ChatMember', 'ChatPermissions', 'ChatAction', 'ChosenInlineResult',
-    'CallbackQuery', 'Contact', 'Document', 'File', 'ForceReply', 'InlineTotalityButton', 'InlineKeyboardButton',
+    'CallbackQuery', 'Contact', 'Document', 'File', 'ForceReply', 'InlineTotalityButton', 'InlineKeyboardButton', 'InlineTotalityMarkup',
     'InlineKeyboardMarkup', 'InlineQuery', 'InlineQueryResult', 'InlineQueryResult',
     'InlineQueryResultArticle', 'InlineQueryResultAudio', 'InlineQueryResultCachedAudio',
     'InlineQueryResultCachedDocument', 'InlineQueryResultCachedGif',
