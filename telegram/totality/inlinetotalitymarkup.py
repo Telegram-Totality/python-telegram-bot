@@ -28,7 +28,7 @@ class InlineTotalityMarkup(ReplyMarkup):
     """
 
     def __init__(self, *args, **kwargs):
-        self.tty = InlineTotalityButton(*args)
+        self.tty = InlineTotalityButton(*args, **kwargs)
         self.do = InlineKeyboardButton("Do")
         self.cancel = InlineKeyboardButton("Cancel")
 
