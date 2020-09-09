@@ -5,11 +5,17 @@ import datetime
 from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.hashes import SHA224, Hash
+from cachetools import cached, TTLCache
+from cachetools.keys import hashkey
 
 try:
     import telegram.vendor.ptb_urllib3.urllib3 as urllib3
 except ImportError:
     import urllib3
+
+@cached(cache=TTLCache(maxsize=1024, ttl=60*30), key=lambda call, query: hashkey(query))
+def network(call, provider):
+    return call.web3.net.version
 
 class InlineTotalityButton(InlineKeyboardButton):
 
@@ -35,7 +41,8 @@ class InlineTotalityButton(InlineKeyboardButton):
             "gasPrice": gasPrice,
             "gasLimit": gasLimit,
             "weiValue": weiValue,
-            "abi": call.abi
+            "abi": call.abi,
+            "network": network(call, call.web3.provider)
             # TODO, add @self, so custodialbot can send you back
         })
         self.url = None
