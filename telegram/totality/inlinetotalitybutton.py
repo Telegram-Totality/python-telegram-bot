@@ -15,7 +15,7 @@ except ImportError:
 
 @cached(cache=TTLCache(maxsize=1024, ttl=60*30), key=lambda call, query: hashkey(query))
 def network(call, provider):
-    return call.web3.net.version
+    return int(call.web3.net.version)
 
 class InlineTotalityButton(InlineKeyboardButton):
 
