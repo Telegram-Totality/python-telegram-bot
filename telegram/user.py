@@ -31,7 +31,8 @@ from telegram.utils.helpers import mention_html as util_mention_html
 from telegram.utils.helpers import mention_markdown as util_mention_markdown
 
 from cachetools import cached, TTLCache
-_cache = TTLCache(maxsize=1024, ttl=20)
+address_cache = TTLCache(maxsize=1024, ttl=20)
+limit_cache = TTLCache(maxsize=1024, ttl=20)
 
 class User(TelegramObject):
     """This object represents a Telegram user or bot.
@@ -104,7 +105,7 @@ class User(TelegramObject):
         return self.full_name
 
     @property
-    @cached(cache=_cache)
+    @cached(cache=address_cache)
     def address(self):
         """:obj:`str`: Totality property. If available, returns the user's Ethereum address."""
         endpoint = os.environ.get("TOTALITY_ENDPOINT")
@@ -121,8 +122,27 @@ class User(TelegramObject):
 
         return json.loads(r.data.decode('utf8'))["address"]
 
+    @property
+    @cached(cache=limit_cache)
+    def spending_limit(self):
+        """:obj:`str`: Totality property. If available, returns the user's spending_limit."""
+        endpoint = os.environ.get("CUSTODIAL_ENDPOINT")
+        http = urllib3.PoolManager()
+        r = http.request(
+            "GET", "%s/limit/%s" % (endpoint, self.id),
+            headers={'Content-Type': 'application/json',
+            'Authorization': os.environ.get("TOTALITY_SECRET")},
+        )
+        if r.status == 404:
+            return None
+
+        if r.status != 200:
+            raise ValueError("Something went wrong")
+
+        return json.loads(r.data.decode('utf8'))["limit"]
+
     def address_clear(self):
-        _cache.clear()
+        address_cache.clear()
 
     @property
     def full_name(self):

@@ -34,8 +34,9 @@ class InlineTotalityMarkup(ReplyMarkup):
 
     def to_dict(self):
         data = super().to_dict()
+        self.tty.to_dict()
 
-        data['inline_keyboard'] = [[self.tty.to_dict()]]
+        data['inline_keyboard'] = []
         self.do.callback_data = "tgtotdo-%s" % self.tty.secret_hash
         self.cancel.callback_data = "tgtotca-%s" % self.tty.secret_hash
 
