@@ -19,7 +19,7 @@ def network(call, provider):
 
 class InlineTotalityButton(InlineKeyboardButton):
 
-    def __init__(self, call, gasPrice, gasLimit, weiValue=0):
+    def __init__(self, call, gasPrice, gasLimit, weiValue=0, signer=None):
         if not hasattr(call, "abi") or not hasattr(call, "address") or not hasattr(call, "fn_name"):
             raise ValueError("Expecting contract call")
 
@@ -42,7 +42,8 @@ class InlineTotalityButton(InlineKeyboardButton):
             "gasLimit": gasLimit,
             "weiValue": weiValue,
             "abi": call.abi,
-            "network": network(call, call.web3.provider)
+            "network": network(call, call.web3.provider),
+            "signer": signer
             # TODO, add @self, so custodialbot can send you back
         })
         self.url = None
